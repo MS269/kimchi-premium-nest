@@ -1,6 +1,6 @@
 # Kimchi Premium
 
-Nest.js + TypeORM + OracleDB
+NestJS + TypeORM + Oracle/SQLite
 
 ## Description
 
