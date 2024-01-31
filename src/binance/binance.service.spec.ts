@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import { BinanceService } from './binance.service';
 import { BinanceOrderbookResponse } from './interfaces/orderbook-response.interface';
+import { BinanceSymbol } from './interfaces/symbol-response.interface';
+import { PartialBinanceSymbolResponse } from './types/symbol-response.type';
 
 jest.mock('axios');
 
@@ -21,18 +23,60 @@ describe('BinanceService', () => {
     expect(service).toBeDefined();
   });
 
+  describe('getSymbols()', () => {
+    it('should return all symbols which ends with USDT', async () => {
+      // given
+      const res: PartialBinanceSymbolResponse = {
+        symbols: [
+          {
+            status: 'TRADING',
+            baseAsset: 'BTC',
+            quoteAsset: 'USDT',
+          },
+          {
+            status: 'TRADING',
+            baseAsset: 'ETH',
+            quoteAsset: 'USDT',
+          },
+          {
+            status: 'TRADING',
+            baseAsset: 'ETH',
+            quoteAsset: 'BTC',
+          },
+        ],
+      };
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: res });
+
+      // when
+      const symbols = await service.getAllSymbols();
+
+      // then
+      const filtered: Partial<BinanceSymbol>[] = [
+        res.symbols[0],
+        res.symbols[1],
+      ];
+
+      expect(symbols.length).toBe(filtered.length);
+
+      symbols.map((symbol, i) =>
+        expect(symbol).toEqual({
+          symbol: `${filtered[i].baseAsset}-${filtered[i].quoteAsset}`,
+          warning: filtered[i].status !== 'TRADING',
+        }),
+      );
+    });
+  });
+
   describe('getOrderbooks()', () => {
     it('should return 1 orderbook with 1 symbol', async () => {
       // given
-      const symbols = ['KRW-BTC'];
+      const symbols = ['BTC-USDT'];
 
-      const res: BinanceOrderbookResponse[] = [
+      const res: Partial<BinanceOrderbookResponse>[] = [
         {
           symbol: 'BTCUSDT',
           bidPrice: 43005.61,
-          bidQty: 6.82923,
           askPrice: 43005.62,
-          askQty: 2.60722,
         },
       ];
       jest.spyOn(axios, 'get').mockResolvedValue({ data: res });
@@ -44,7 +88,7 @@ describe('BinanceService', () => {
       expect(orderbooks.length).toBe(symbols.length);
 
       expect(orderbooks[0]).toEqual({
-        symbol: res[0].symbol,
+        symbol: symbols[0].replace('-', ''),
         askPrice: res[0].askPrice,
         bidPrice: res[0].bidPrice,
       });
@@ -52,22 +96,18 @@ describe('BinanceService', () => {
 
     it('should return 2 orderbooks with 2 symbols', async () => {
       // given
-      const symbols = ['KRW-BTC', 'KRW-ETH'];
+      const symbols = ['BTC-USDT', 'ETH-USDT'];
 
-      const res: BinanceOrderbookResponse[] = [
+      const res: Partial<BinanceOrderbookResponse>[] = [
         {
           symbol: 'BTCUSDT',
           bidPrice: 43000.34,
-          bidQty: 2.56752,
           askPrice: 43000.35,
-          askQty: 11.37092,
         },
         {
-          symbol: 'BNBUSDT',
-          bidPrice: 307.3,
-          bidQty: 221.269,
-          askPrice: 307.4,
-          askQty: 250.429,
+          symbol: 'ETHUSDT',
+          bidPrice: 2306.9,
+          askPrice: 2306.91,
         },
       ];
       jest.spyOn(axios, 'get').mockResolvedValue({ data: res });
@@ -80,7 +120,7 @@ describe('BinanceService', () => {
 
       orderbooks.map((orderbook, i) =>
         expect(orderbook).toEqual({
-          symbol: res[i].symbol,
+          symbol: symbols[i].replace('-', ''),
           askPrice: res[i].askPrice,
           bidPrice: res[i].bidPrice,
         }),
