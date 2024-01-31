@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
+import { UpbitOrderbookResponse } from './interfaces/orderbook-response.interface';
 import { UpbitService } from './upbit.service';
 
 jest.mock('axios');
@@ -25,7 +26,7 @@ describe('UpbitService', () => {
       // given
       const symbols = ['KRW-BTC'];
 
-      const res = [
+      const res: UpbitOrderbookResponse[] = [
         {
           market: 'KRW-BTC',
           timestamp: 1706687128273,
@@ -59,7 +60,7 @@ describe('UpbitService', () => {
       // given
       const symbols = ['KRW-BTC', 'KRW-ETH'];
 
-      const res = [
+      const res: UpbitOrderbookResponse[] = [
         {
           market: 'KRW-BTC',
           timestamp: 1706687266573,
