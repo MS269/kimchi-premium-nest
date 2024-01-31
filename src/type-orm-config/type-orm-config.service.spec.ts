@@ -50,7 +50,7 @@ describe('TypeOrmConfigService', () => {
           case 'DB_SID':
             return sid;
           default:
-            return null;
+            return undefined;
         }
       });
 
@@ -79,7 +79,7 @@ describe('TypeOrmConfigService', () => {
           case 'NODE_ENV':
             return nodeEnv;
           default:
-            return null;
+            return undefined;
         }
       });
 
@@ -95,6 +95,24 @@ describe('TypeOrmConfigService', () => {
         // synchronize: true,
         // dropSchema: true,
       });
+    });
+  });
+
+  it('should return typeorm options without dotenv', () => {
+    // given
+    jest.spyOn(configService, 'get').mockReturnValue(undefined);
+
+    // when
+    const typeOrmOptions = service.createTypeOrmOptions();
+
+    // then
+    expect(typeOrmOptions).toEqual({
+      type: 'sqlite',
+      database: 'dev.db',
+      autoLoadEntities: true,
+      logging: true,
+      // synchronize: true,
+      // dropSchema: true,
     });
   });
 });
