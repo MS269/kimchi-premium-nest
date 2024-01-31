@@ -49,6 +49,8 @@ describe('UpbitService', () => {
       const orderbooks = await service.getOrderbooks(symbols);
 
       // then
+      expect(orderbooks.length).toBe(symbols.length);
+
       expect(orderbooks[0]).toEqual({
         symbol: res[0].market,
         askPrice: res[0].orderbook_units[0].ask_price,
@@ -98,6 +100,8 @@ describe('UpbitService', () => {
       const orderbooks = await service.getOrderbooks(symbols);
 
       // then
+      expect(orderbooks.length).toBe(symbols.length);
+
       orderbooks.map((orderbook, i) =>
         expect(orderbook).toEqual({
           symbol: res[i].market,
