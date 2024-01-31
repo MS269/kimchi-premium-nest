@@ -45,16 +45,7 @@ describe('UpbitService', () => {
       const symbols = await service.getAllSymbols();
 
       // then
-      const filtered: Partial<UpbitSymbolResponse>[] = [
-        {
-          market_warning: 'NONE',
-          market: 'KRW-BTC',
-        },
-        {
-          market_warning: 'NONE',
-          market: 'KRW-ETH',
-        },
-      ];
+      const filtered: Partial<UpbitSymbolResponse>[] = [res[0], res[1]];
 
       expect(symbols.length).toBe(filtered.length);
 
