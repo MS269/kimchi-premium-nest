@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
 import { UpbitOrderbookResponse } from './interfaces/orderbook-response.interface';
+import { UpbitSymbolResponse } from './interfaces/symbol-response.interface';
 import { UpbitService } from './upbit.service';
 
 jest.mock('axios');
@@ -19,6 +20,46 @@ describe('UpbitService', () => {
 
   it('should be defined', () => {
     expect(service).toBeDefined();
+  });
+
+  describe('getSymbols()', () => {
+    it('should return all symbols which starts with KRW', async () => {
+      // given
+      const res: UpbitSymbolResponse[] = [
+        {
+          market_warning: 'NONE',
+          market: 'KRW-BTC',
+          korean_name: '비트코인',
+          english_name: 'Bitcoin',
+        },
+        {
+          market_warning: 'NONE',
+          market: 'KRW-ETH',
+          korean_name: '이더리움',
+          english_name: 'Ethereum',
+        },
+        {
+          market_warning: 'NONE',
+          market: 'BTC-ETH',
+          korean_name: '이더리움',
+          english_name: 'Ethereum',
+        },
+      ];
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: res });
+
+      // when
+      const symbols = await service.getAllSymbols();
+
+      // then
+      expect(symbols.length).toBe(res.length - 1);
+
+      symbols.map((symbol, i) =>
+        expect(symbol).toEqual({
+          symbol: res[i].market,
+          warning: res[i].market_warning !== 'NONE',
+        }),
+      );
+    });
   });
 
   describe('getOrderbooks()', () => {
