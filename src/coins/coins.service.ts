@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { CreateCoinDto } from './dto/create-coin.dto';
+import { FindCoinDto } from './dto/find-coin.dto';
 import { UpdateCoinDto } from './dto/update-coin.dto';
 import { Coin } from './entities/coin.entity';
 
@@ -23,6 +24,10 @@ export class CoinsService {
 
   async findOne(id: number) {
     return this.coinsRepository.findOneBy({ id });
+  }
+
+  async findOneBy(findCoinDto: FindCoinDto) {
+    return this.coinsRepository.findOneBy(findCoinDto);
   }
 
   async update(id: number, updateCoinDto: UpdateCoinDto) {
