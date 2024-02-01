@@ -20,8 +20,8 @@ export class UpbitService {
 
     return filtered.map((coin) => ({
       name: coin.english_name,
-      baseAsset: coin.market.split('-')[0],
-      quoteAsset: coin.market.split('-')[1],
+      baseAsset: coin.market.split('-')[1],
+      quoteAsset: coin.market.split('-')[0],
       warning: coin.market_warning !== 'NONE',
     }));
   }

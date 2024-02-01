@@ -52,14 +52,14 @@ describe('UpbitService', () => {
       const expectedCoins: Partial<Coin>[] = [
         {
           name: 'Bitcoin',
-          baseAsset: 'KRW',
-          quoteAsset: 'BTC',
+          baseAsset: 'BTC',
+          quoteAsset: 'KRW',
           warning: false,
         },
         {
           name: 'Ethereum',
-          baseAsset: 'KRW',
-          quoteAsset: 'ETH',
+          baseAsset: 'ETH',
+          quoteAsset: 'KRW',
           warning: true,
         },
       ];
