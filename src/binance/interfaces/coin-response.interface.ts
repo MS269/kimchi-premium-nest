@@ -22,7 +22,7 @@ export interface BinanceSymbol {
 }
 
 /** API: https://binance-docs.github.io/apidocs/spot/en/#exchange-information */
-export interface BinanceSymbolResponse {
+export interface BinanceCoinsResponse {
   timezone: string;
   serverTime: number;
   rateLimits?: [];

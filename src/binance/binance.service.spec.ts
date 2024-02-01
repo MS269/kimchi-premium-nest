@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
+import { Coin } from '../coins/entities/coin.entity';
 import { BinanceService } from './binance.service';
 import { BinanceOrderbookResponse } from './interfaces/orderbook-response.interface';
-import { BinanceSymbol } from './interfaces/symbol-response.interface';
-import { PartialBinanceSymbolResponse } from './types/symbol-response.type';
+import { PartialBinanceCoinsResponse } from './types/coin-response.type';
 
 jest.mock('axios');
 
@@ -23,10 +23,10 @@ describe('BinanceService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getSymbols()', () => {
-    it('should return all symbols which ends with USDT', async () => {
+  describe('fetchAllCoins()', () => {
+    it('should return all coins (quote asset = USDT)', async () => {
       // given
-      const res: PartialBinanceSymbolResponse = {
+      const mockedResponse: PartialBinanceCoinsResponse = {
         symbols: [
           {
             status: 'TRADING',
@@ -34,7 +34,7 @@ describe('BinanceService', () => {
             quoteAsset: 'USDT',
           },
           {
-            status: 'TRADING',
+            status: 'BREAK',
             baseAsset: 'ETH',
             quoteAsset: 'USDT',
           },
@@ -45,25 +45,25 @@ describe('BinanceService', () => {
           },
         ],
       };
-      jest.spyOn(axios, 'get').mockResolvedValue({ data: res });
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
 
       // when
-      const symbols = await service.getAllSymbols();
+      const result = await service.fetchAllCoins();
 
       // then
-      const filtered: Partial<BinanceSymbol>[] = [
-        res.symbols[0],
-        res.symbols[1],
+      const expectedCoins: Partial<Coin>[] = [
+        {
+          baseAsset: 'BTC',
+          quoteAsset: 'USDT',
+          warning: false,
+        },
+        {
+          baseAsset: 'ETH',
+          quoteAsset: 'USDT',
+          warning: true,
+        },
       ];
-
-      expect(symbols.length).toBe(filtered.length);
-
-      symbols.map((symbol, i) =>
-        expect(symbol).toEqual({
-          symbol: `${filtered[i].baseAsset}-${filtered[i].quoteAsset}`,
-          warning: filtered[i].status !== 'TRADING',
-        }),
-      );
+      expect(result).toEqual(expectedCoins);
     });
   });
 

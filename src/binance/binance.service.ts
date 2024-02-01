@@ -1,25 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
+import { BinanceCoinsResponse } from './interfaces/coin-response.interface';
 import { BinanceOrderbookResponse } from './interfaces/orderbook-response.interface';
-import { BinanceSymbolResponse } from './interfaces/symbol-response.interface';
 
 /** API: https://binance-docs.github.io/apidocs/spot/en */
 @Injectable()
 export class BinanceService {
   /** API: https://binance-docs.github.io/apidocs/spot/en/#exchange-information */
-  async getAllSymbols() {
-    const { data } = await axios.get<BinanceSymbolResponse>(
-      'https://api.upbit.com/v1/market/all',
+  async fetchAllCoins() {
+    const { data } = await axios.get<BinanceCoinsResponse>(
+      'https://api.binance.com/api/v3/exchangeInfo',
     );
 
     const filtered = data.symbols.filter(
-      (symbol) => symbol.quoteAsset.toUpperCase() === 'USDT',
+      (coin) => coin.quoteAsset.toUpperCase() === 'USDT',
     );
 
-    return filtered.map((symbol) => ({
-      symbol: `${symbol.baseAsset.toUpperCase()}-${symbol.quoteAsset.toUpperCase()}`,
-      warning: symbol.status !== 'TRADING',
+    return filtered.map((coin) => ({
+      baseAsset: coin.baseAsset,
+      quoteAsset: coin.quoteAsset,
+      warning: coin.status !== 'TRADING',
     }));
   }
 
