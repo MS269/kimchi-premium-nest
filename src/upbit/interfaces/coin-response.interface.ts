@@ -1,5 +1,5 @@
 /** API: https://docs.upbit.com/reference/%EB%A7%88%EC%BC%93-%EC%BD%94%EB%93%9C-%EC%A1%B0%ED%9A%8C */
-export interface UpbitSymbolResponse {
+export interface UpbitCoinResponse {
   /** 업비트에서 제공중인 시장 정보 */
   market: string;
 

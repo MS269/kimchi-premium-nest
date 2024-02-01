@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
+import { UpbitCoinResponse } from './interfaces/coin-response.interface';
 import { UpbitOrderbookResponse } from './interfaces/orderbook-response.interface';
-import { UpbitSymbolResponse } from './interfaces/symbol-response.interface';
 
 /** API: https://docs.upbit.com/reference */
 @Injectable()
 export class UpbitService {
   /** API: https://docs.upbit.com/reference/%EB%A7%88%EC%BC%93-%EC%BD%94%EB%93%9C-%EC%A1%B0%ED%9A%8C */
-  async getAllSymbols() {
-    const { data } = await axios.get<UpbitSymbolResponse[]>(
+  async fetchAllCoins() {
+    const { data } = await axios.get<UpbitCoinResponse[]>(
       'https://api.upbit.com/v1/market/all',
       { params: { isDetails: true } },
     );
 
-    const filtered = data.filter((symbol) =>
-      symbol.market.toUpperCase().startsWith('KRW'),
+    const filtered = data.filter((coin) =>
+      coin.market.toUpperCase().startsWith('KRW'),
     );
 
-    return filtered.map((symbol) => ({
-      symbol: symbol.market,
-      warning: symbol.market_warning !== 'NONE',
+    return filtered.map((coin) => ({
+      name: coin.english_name,
+      baseAsset: coin.market.split('-')[0],
+      quoteAsset: coin.market.split('-')[1],
+      warning: coin.market_warning !== 'NONE',
     }));
   }
 

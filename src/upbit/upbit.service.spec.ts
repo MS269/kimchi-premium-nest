@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
-import { UpbitSymbolResponse } from './interfaces/symbol-response.interface';
+import { Coin } from '../coins/entities/coin.entity';
+import { UpbitCoinResponse } from './interfaces/coin-response.interface';
 import { PartialUpbitOrderbookResponse } from './types/orderbook-response.type';
 import { UpbitService } from './upbit.service';
 
@@ -22,39 +23,50 @@ describe('UpbitService', () => {
     expect(service).toBeDefined();
   });
 
-  describe('getSymbols()', () => {
-    it('should return all symbols which starts with KRW', async () => {
+  describe('fetchAllCoins()', () => {
+    it('should return all coins which starts with KRW', async () => {
       // given
-      const res: Partial<UpbitSymbolResponse>[] = [
+      const mockedResponse: Partial<UpbitCoinResponse>[] = [
         {
           market_warning: 'NONE',
           market: 'KRW-BTC',
+          english_name: 'Bitcoin',
         },
         {
-          market_warning: 'NONE',
+          market_warning: 'CAUTION',
           market: 'KRW-ETH',
+          english_name: 'Ethereum',
         },
         {
           market_warning: 'NONE',
           market: 'BTC-ETH',
+          english_name: 'Ethereum',
         },
       ];
-      jest.spyOn(axios, 'get').mockResolvedValue({ data: res });
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
 
       // when
-      const symbols = await service.getAllSymbols();
+      const result = await service.fetchAllCoins();
 
       // then
-      const filtered: Partial<UpbitSymbolResponse>[] = [res[0], res[1]];
+      const expectedCoins: Partial<Coin>[] = [
+        {
+          name: 'Bitcoin',
+          baseAsset: 'KRW',
+          quoteAsset: 'BTC',
+          warning: false,
+        },
+        {
+          name: 'Ethereum',
+          baseAsset: 'KRW',
+          quoteAsset: 'ETH',
+          warning: true,
+        },
+      ];
 
-      expect(symbols.length).toBe(filtered.length);
+      expect(result.length).toBe(expectedCoins.length);
 
-      symbols.map((symbol, i) =>
-        expect(symbol).toEqual({
-          symbol: filtered[i].market,
-          warning: filtered[i].market_warning !== 'NONE',
-        }),
-      );
+      result.map((coin, i) => expect(coin).toEqual(expectedCoins[i]));
     });
   });
 
