@@ -24,7 +24,7 @@ describe('UpbitService', () => {
   });
 
   describe('fetchAllCoins()', () => {
-    it('should return all coins which starts with KRW', async () => {
+    it('should return all coins (quote asset = KRW)', async () => {
       // given
       const mockedResponse: Partial<UpbitCoinResponse>[] = [
         {
@@ -63,10 +63,7 @@ describe('UpbitService', () => {
           warning: true,
         },
       ];
-
-      expect(result.length).toBe(expectedCoins.length);
-
-      result.map((coin, i) => expect(coin).toEqual(expectedCoins[i]));
+      expect(result).toEqual(expectedCoins);
     });
   });
 
