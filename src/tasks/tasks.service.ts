@@ -23,6 +23,8 @@ export class TasksService implements OnApplicationBootstrap {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async updateAllCoins() {
+    const now = Date.now();
+
     const upbitCoins = await this.upbitService.fetchAllCoins();
     const binanceCoins = await this.binanceService.fetchAllCoins();
 
@@ -70,5 +72,7 @@ export class TasksService implements OnApplicationBootstrap {
         }
       }),
     );
+
+    this.logger.log(`${this.updateAllCoins.name}() +${Date.now() - now}ms`);
   }
 }
