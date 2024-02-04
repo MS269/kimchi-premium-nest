@@ -31,7 +31,6 @@ describe('TypeOrmConfigService', () => {
       const port = '1521';
       const username = 'system';
       const password = 'oracle';
-      const database = 'kimchi-premium';
       const sid = 'orcl';
       jest.spyOn(configService, 'get').mockImplementation((key: string) => {
         switch (key) {
@@ -45,8 +44,6 @@ describe('TypeOrmConfigService', () => {
             return username;
           case 'DB_PASSWORD':
             return password;
-          case 'DB_DATABASE':
-            return database;
           case 'DB_SID':
             return sid;
           default:
@@ -64,7 +61,6 @@ describe('TypeOrmConfigService', () => {
         port,
         username,
         password,
-        database,
         sid,
         autoLoadEntities: true,
         // synchronize: true,
