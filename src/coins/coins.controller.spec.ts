@@ -5,14 +5,16 @@ import { CoinsService } from './coins.service';
 
 describe('CoinsController', () => {
   let controller: CoinsController;
+  let service: CoinsService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CoinsController],
-      providers: [CoinsService],
+      providers: [{ provide: CoinsService, useValue: {} }],
     }).compile();
 
     controller = module.get<CoinsController>(CoinsController);
+    service = module.get<CoinsService>(CoinsService);
   });
 
   it('should be defined', () => {

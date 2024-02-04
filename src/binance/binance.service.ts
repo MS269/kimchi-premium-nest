@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
 import { BinanceCoinsResponse } from './interfaces/coin-response.interface';
-import { BinanceOrderbookResponse } from './interfaces/orderbook-response.interface';
+import { BinancePriceResponse } from './interfaces/price-response.interface';
 
 /** API: https://binance-docs.github.io/apidocs/spot/en */
 @Injectable()
@@ -18,29 +18,29 @@ export class BinanceService {
     );
 
     return filtered.map((coin) => ({
-      baseAsset: coin.baseAsset,
-      quoteAsset: coin.quoteAsset,
+      exchange: 'Binance',
+      symbol: coin.symbol.toUpperCase(),
+      baseAsset: coin.baseAsset.toUpperCase(),
+      quoteAsset: coin.quoteAsset.toUpperCase(),
       warning: coin.status !== 'TRADING',
+      message: coin.status !== 'TRADING' ? coin.status : '',
     }));
   }
 
   /** API: https://binance-docs.github.io/apidocs/spot/en/#symbol-order-book-ticker */
-  async getOrderbooks(symbols: string[]) {
+  async fetchPrices(symbols: string[]) {
     if (symbols.length === 0) {
       return [];
     }
 
-    const { data } = await axios.get<BinanceOrderbookResponse[]>(
+    const { data } = await axios.get<BinancePriceResponse[]>(
       'https://api.binance.com/api/v3/ticker/bookTicker',
-      {
-        params: {
-          symbols: '["' + symbols.join('","').replaceAll('-', '') + '"]',
-        },
-      },
+      { params: { symbols: '["' + symbols.join('","') + '"]' } },
     );
 
     return data.map((orderbook) => ({
-      symbol: orderbook.symbol,
+      exchange: 'Binance',
+      symbol: orderbook.symbol.toUpperCase(),
       askPrice: orderbook.askPrice,
       bidPrice: orderbook.bidPrice,
     }));

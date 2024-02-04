@@ -7,9 +7,5 @@ export class FindCoinDto {
 
   @IsUppercase()
   @IsNotEmpty()
-  baseAsset: string;
-
-  @IsUppercase()
-  @IsNotEmpty()
-  quoteAsset: string;
+  symbol: string;
 }

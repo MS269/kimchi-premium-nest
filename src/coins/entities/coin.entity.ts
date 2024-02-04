@@ -14,6 +14,9 @@ export class Coin {
   name?: string;
 
   @Column()
+  symbol: string;
+
+  @Column()
   baseAsset: string;
 
   @Column()
@@ -25,6 +28,6 @@ export class Coin {
   @Column({ default: false })
   warning: boolean;
 
-  @Column({ nullable: true })
-  message?: string;
+  @Column({ default: '' })
+  message: string;
 }

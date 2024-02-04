@@ -31,22 +31,24 @@ export class TasksService implements OnApplicationBootstrap {
     await Promise.all(
       upbitCoins.map(async (coin) => {
         const exists = await this.coinsService.findOneBy({
-          exchange: 'Upbit',
-          baseAsset: coin.baseAsset,
-          quoteAsset: coin.quoteAsset,
+          exchange: coin.exchange,
+          symbol: coin.symbol,
         });
 
         if (exists) {
           await this.coinsService.update(exists.id, {
             warning: coin.warning,
+            message: coin.message,
           });
         } else {
           await this.coinsService.create({
-            exchange: 'Upbit',
+            exchange: coin.exchange,
             name: coin.name,
+            symbol: coin.symbol,
             baseAsset: coin.baseAsset,
             quoteAsset: coin.quoteAsset,
             warning: coin.warning,
+            message: coin.message,
           });
         }
       }),
@@ -55,19 +57,23 @@ export class TasksService implements OnApplicationBootstrap {
     await Promise.all(
       binanceCoins.map(async (coin) => {
         const exists = await this.coinsService.findOneBy({
-          exchange: 'Binance',
-          baseAsset: coin.baseAsset,
-          quoteAsset: coin.quoteAsset,
+          exchange: coin.exchange,
+          symbol: coin.symbol,
         });
 
         if (exists) {
-          await this.coinsService.update(exists.id, { warning: coin.warning });
+          await this.coinsService.update(exists.id, {
+            warning: coin.warning,
+            message: coin.message,
+          });
         } else {
           await this.coinsService.create({
-            exchange: 'Binance',
+            exchange: coin.exchange,
+            symbol: coin.symbol,
             baseAsset: coin.baseAsset,
             quoteAsset: coin.quoteAsset,
             warning: coin.warning,
+            message: coin.message,
           });
         }
       }),

@@ -15,6 +15,10 @@ export class CreateCoinDto {
   @IsOptional()
   name?: string;
 
+  @IsString()
+  @IsNotEmpty()
+  symbol: string;
+
   @IsUppercase()
   @IsNotEmpty()
   baseAsset: string;

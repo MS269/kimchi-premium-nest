@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 
 import { UpbitCoinResponse } from './interfaces/coin-response.interface';
-import { UpbitOrderbookResponse } from './interfaces/orderbook-response.interface';
+import { UpbitPriceResponse } from './interfaces/price-response.interface';
 
 /** API: https://docs.upbit.com/reference */
 @Injectable()
@@ -19,28 +19,32 @@ export class UpbitService {
     );
 
     return filtered.map((coin) => ({
+      exchange: 'Upbit',
       name: coin.english_name,
-      baseAsset: coin.market.split('-')[1],
-      quoteAsset: coin.market.split('-')[0],
+      symbol: coin.market.toUpperCase(),
+      baseAsset: coin.market.split('-')[1].toUpperCase(),
+      quoteAsset: coin.market.split('-')[0].toUpperCase(),
       warning: coin.market_warning !== 'NONE',
+      message: coin.market_warning !== 'NONE' ? coin.market_warning : '',
     }));
   }
 
   /** API: https://docs.upbit.com/reference/%ED%98%B8%EA%B0%80-%EC%A0%95%EB%B3%B4-%EC%A1%B0%ED%9A%8C */
-  async getOrderbooks(symbols: string[]) {
+  async fetchPrices(symbols: string[]) {
     if (symbols.length === 0) {
       return [];
     }
 
-    const { data } = await axios.get<UpbitOrderbookResponse[]>(
+    const { data } = await axios.get<UpbitPriceResponse[]>(
       'https://api.upbit.com/v1/orderbook',
       { params: { markets: symbols.join('&markets=') } },
     );
 
     return data.map((orderbook) => ({
-      symbol: orderbook.market,
-      askPrice: orderbook.orderbook_units[0].ask_price,
+      exchange: 'Upbit',
+      symbol: orderbook.market.toUpperCase(),
       bidPrice: orderbook.orderbook_units[0].bid_price,
+      askPrice: orderbook.orderbook_units[0].ask_price,
     }));
   }
 }
