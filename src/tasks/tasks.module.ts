@@ -1,13 +1,18 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BinanceModule } from '../binance/binance.module';
-import { CoinsModule } from '../coins/coins.module';
-import { PricesModule } from '../prices/prices.module';
+import { Coin } from '../common/entities/coin.entity';
+import { Price } from '../common/entities/price.entity';
 import { UpbitModule } from '../upbit/upbit.module';
 import { TasksService } from './tasks.service';
 
 @Module({
-  imports: [CoinsModule, PricesModule, UpbitModule, BinanceModule],
+  imports: [
+    TypeOrmModule.forFeature([Coin, Price]),
+    UpbitModule,
+    BinanceModule,
+  ],
   providers: [TasksService],
 })
 export class TasksModule {}

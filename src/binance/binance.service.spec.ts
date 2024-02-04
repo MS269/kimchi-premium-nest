@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
-import { Coin } from '../coins/entities/coin.entity';
-import { Price } from '../prices/entities/price.entity';
+import { Coin } from '../common/entities/coin.entity';
+import { Price } from '../common/entities/price.entity';
 import { BinanceService } from './binance.service';
 import { BinancePriceResponse } from './interfaces/price-response.interface';
 import { PartialBinanceCoinsResponse } from './types/coin-response.type';

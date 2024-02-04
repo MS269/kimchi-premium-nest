@@ -1,6 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Price } from '../../prices/entities/price.entity';
+import { Price } from './price.entity';
 
 @Entity()
 export class Coin {

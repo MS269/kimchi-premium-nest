@@ -1,9 +1,11 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { BinanceService } from '../binance/binance.service';
-import { CoinsService } from '../coins/coins.service';
-import { PricesService } from '../prices/prices.service';
+import { Coin } from '../common/entities/coin.entity';
+import { Price } from '../common/entities/price.entity';
 import { UpbitService } from '../upbit/upbit.service';
 
 @Injectable()
@@ -11,14 +13,17 @@ export class TasksService implements OnApplicationBootstrap {
   private readonly logger = new Logger(TasksService.name);
 
   constructor(
-    private readonly coinsService: CoinsService,
-    private readonly pricesService: PricesService,
+    @InjectRepository(Coin)
+    private readonly coinRepository: Repository<Coin>,
+    @InjectRepository(Price)
+    private readonly PriceRepository: Repository<Price>,
     private readonly upbitService: UpbitService,
     private readonly binanceService: BinanceService,
   ) {}
 
   async onApplicationBootstrap() {
     await this.updateAllCoins();
+    await this.updateAllPrices();
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
@@ -28,47 +33,29 @@ export class TasksService implements OnApplicationBootstrap {
     const upbitCoins = await this.upbitService.fetchAllCoins();
     const binanceCoins = await this.binanceService.fetchAllCoins();
 
-    await Promise.all(
-      upbitCoins.map(async (coin) => {
-        const exists = await this.coinsService.findOneBy({
-          exchange: coin.exchange,
-          symbol: coin.symbol,
-        });
-
-        if (exists) {
-          await this.coinsService.update(exists.id, {
-            warning: coin.warning,
-            message: coin.message,
-          });
-        } else {
-          await this.coinsService.create({
-            exchange: coin.exchange,
-            name: coin.name,
-            symbol: coin.symbol,
-            baseAsset: coin.baseAsset,
-            quoteAsset: coin.quoteAsset,
-            warning: coin.warning,
-            message: coin.message,
-          });
-        }
-      }),
-    );
+    const coins = [...upbitCoins, ...binanceCoins];
 
     await Promise.all(
-      binanceCoins.map(async (coin) => {
-        const exists = await this.coinsService.findOneBy({
-          exchange: coin.exchange,
-          symbol: coin.symbol,
-        });
+      coins.map(async (coin: Coin) => {
+        const exists = await this.coinRepository
+          .createQueryBuilder('coin')
+          .select('coin.id')
+          .where('coin.exchange = :exchange', { exchange: coin.exchange })
+          .andWhere('coin.symbol = :symbol', { symbol: coin.symbol })
+          .getOne();
 
         if (exists) {
-          await this.coinsService.update(exists.id, {
-            warning: coin.warning,
-            message: coin.message,
-          });
+          await this.coinRepository.update(
+            { id: exists.id },
+            {
+              warning: coin.warning,
+              message: coin.message,
+            },
+          );
         } else {
-          await this.coinsService.create({
+          await this.coinRepository.insert({
             exchange: coin.exchange,
+            name: coin?.name,
             symbol: coin.symbol,
             baseAsset: coin.baseAsset,
             quoteAsset: coin.quoteAsset,
@@ -80,5 +67,48 @@ export class TasksService implements OnApplicationBootstrap {
     );
 
     this.logger.log(`${this.updateAllCoins.name}() +${Date.now() - now}ms`);
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async updateAllPrices() {
+    const now = Date.now();
+
+    const upbitCoins = await this.coinRepository
+      .createQueryBuilder('coin')
+      .select('coin.symbol')
+      .where('coin.exchange = :exchange', { exchange: 'Upbit' })
+      .getMany();
+    const binanceCoins = await this.coinRepository
+      .createQueryBuilder('coin')
+      .select('coin.symbol')
+      .where('coin.exchange = :exchange', { exchange: 'Binance' })
+      .getMany();
+
+    const upbitSymbols = upbitCoins.map((coin) => coin.symbol);
+    const binanceSymbols = binanceCoins.map((coin) => coin.symbol);
+
+    const upbitPrices = await this.upbitService.fetchPrices(upbitSymbols);
+    const binancePrices = await this.binanceService.fetchPrices(binanceSymbols);
+
+    const prices = [...upbitPrices, ...binancePrices];
+
+    await Promise.all(
+      prices.map(async (price) => {
+        const coin = await this.coinRepository
+          .createQueryBuilder('coin')
+          .select('coin.id')
+          .where('coin.exchange = :exchange', { exchange: price.exchange })
+          .andWhere('coin.symbol = :symbol', { symbol: price.symbol })
+          .getOne();
+
+        await this.PriceRepository.save({
+          coin,
+          bidPrice: price.bidPrice,
+          askPrice: price.askPrice,
+        });
+      }),
+    );
+
+    this.logger.log(`${this.updateAllPrices.name}() +${Date.now() - now}ms`);
   }
 }

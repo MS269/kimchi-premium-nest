@@ -87,7 +87,7 @@ describe('TypeOrmConfigService', () => {
         type: 'sqlite',
         database: 'dev.db',
         autoLoadEntities: true,
-        logging: true,
+        // logging: true,
         // synchronize: true,
         // dropSchema: true,
       });
@@ -106,7 +106,7 @@ describe('TypeOrmConfigService', () => {
       type: 'sqlite',
       database: 'dev.db',
       autoLoadEntities: true,
-      logging: true,
+      // logging: true,
       // synchronize: true,
       // dropSchema: true,
     });

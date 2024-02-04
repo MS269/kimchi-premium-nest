@@ -22,7 +22,7 @@ export class TypeOrmConfigService implements TypeOrmOptionsFactory {
           type: 'sqlite',
           database: 'dev.db',
           autoLoadEntities: true,
-          logging: true,
+          // logging: true,
           // synchronize: true,
           // dropSchema: true,
         };
