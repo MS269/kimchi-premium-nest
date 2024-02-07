@@ -5,7 +5,7 @@ import { BinanceModule } from '../binance/binance.module';
 import { Coin } from '../common/entities/coin.entity';
 import { Price } from '../common/entities/price.entity';
 import { UpbitModule } from '../upbit/upbit.module';
-import { TasksService } from './tasks.service';
+import { TaskService } from './task.service';
 
 @Module({
   imports: [
@@ -13,6 +13,6 @@ import { TasksService } from './tasks.service';
     UpbitModule,
     BinanceModule,
   ],
-  providers: [TasksService],
+  providers: [TaskService],
 })
-export class TasksModule {}
+export class TaskModule {}

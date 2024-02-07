@@ -4,7 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BinanceModule } from './binance/binance.module';
-import { TasksModule } from './tasks/tasks.module';
+import { TaskModule } from './task/task.module';
 import { TypeOrmConfigService } from './type-orm-config/type-orm-config.service';
 import { UpbitModule } from './upbit/upbit.module';
 
@@ -13,7 +13,7 @@ import { UpbitModule } from './upbit/upbit.module';
     ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     ScheduleModule.forRoot(),
-    TasksModule,
+    TaskModule,
     UpbitModule,
     BinanceModule,
   ],

@@ -9,8 +9,8 @@ import { Price } from '../common/entities/price.entity';
 import { UpbitService } from '../upbit/upbit.service';
 
 @Injectable()
-export class TasksService implements OnApplicationBootstrap {
-  private readonly logger = new Logger(TasksService.name);
+export class TaskService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(TaskService.name);
 
   constructor(
     @InjectRepository(Coin)
