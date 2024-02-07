@@ -13,7 +13,7 @@ export class Price {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Coin, (coin) => coin.id)
+  @ManyToOne(() => Coin, (coin) => coin.prices)
   coin: Coin;
 
   @Column()
