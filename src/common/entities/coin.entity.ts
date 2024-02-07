@@ -25,9 +25,6 @@ export class Coin {
   @OneToMany(() => Price, (price) => price.coin)
   prices: Price[];
 
-  @Column({ default: false })
-  warning: boolean;
-
   @Column({ default: '' })
-  message: string;
+  warning: string;
 }

@@ -61,16 +61,14 @@ describe('BinanceService', () => {
           symbol: 'BTCUSDT',
           baseAsset: 'BTC',
           quoteAsset: 'USDT',
-          warning: false,
-          message: '',
+          warning: '',
         },
         {
           exchange: 'Binance',
           symbol: 'ETHUSDT',
           baseAsset: 'ETH',
           quoteAsset: 'USDT',
-          warning: true,
-          message: 'BREAK',
+          warning: 'BREAK',
         },
       ];
       expect(result).toEqual(expectedCoins);

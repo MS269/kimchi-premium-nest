@@ -27,8 +27,7 @@ export class UpbitService {
         symbol: coin.market.toUpperCase(),
         baseAsset: coin.market.split('-')[1].toUpperCase(),
         quoteAsset: coin.market.split('-')[0].toUpperCase(),
-        warning: coin.market_warning !== 'NONE',
-        message: coin.market_warning !== 'NONE' ? coin.market_warning : '',
+        warning: coin.market_warning !== 'NONE' ? coin.market_warning : '',
       }));
     } catch (error) {
       this.logger.error(error);

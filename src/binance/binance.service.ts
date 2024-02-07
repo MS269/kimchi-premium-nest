@@ -25,8 +25,7 @@ export class BinanceService {
         symbol: coin.symbol.toUpperCase(),
         baseAsset: coin.baseAsset.toUpperCase(),
         quoteAsset: coin.quoteAsset.toUpperCase(),
-        warning: coin.status !== 'TRADING',
-        message: coin.status !== 'TRADING' ? coin.status : '',
+        warning: coin.status !== 'TRADING' ? coin.status : '',
       }));
     } catch (error) {
       this.logger.error(error);

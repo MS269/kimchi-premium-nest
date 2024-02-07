@@ -47,10 +47,7 @@ export class TaskService implements OnApplicationBootstrap {
         if (exists) {
           await this.coinRepository.update(
             { id: exists.id },
-            {
-              warning: coin.warning,
-              message: coin.message,
-            },
+            { warning: coin.warning },
           );
         } else {
           await this.coinRepository.insert({
@@ -60,7 +57,6 @@ export class TaskService implements OnApplicationBootstrap {
             baseAsset: coin.baseAsset,
             quoteAsset: coin.quoteAsset,
             warning: coin.warning,
-            message: coin.message,
           });
         }
       }),

@@ -57,8 +57,7 @@ describe('UpbitService', () => {
           symbol: 'KRW-BTC',
           baseAsset: 'BTC',
           quoteAsset: 'KRW',
-          warning: false,
-          message: '',
+          warning: '',
         },
         {
           exchange: 'Upbit',
@@ -66,8 +65,7 @@ describe('UpbitService', () => {
           symbol: 'KRW-ETH',
           baseAsset: 'ETH',
           quoteAsset: 'KRW',
-          warning: true,
-          message: 'CAUTION',
+          warning: 'CAUTION',
         },
       ];
       expect(result).toEqual(expectedCoins);
