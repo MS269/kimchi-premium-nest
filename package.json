@@ -1,7 +1,7 @@
 {
-  "name": "kimchi-premium",
+  "name": "kimchi-premium-nest",
   "version": "0.0.1",
-  "description": "watching kimchi premium price",
+  "description": "kimchi premium nestjs server",
   "author": "MS269",
   "private": true,
   "license": "MIT",

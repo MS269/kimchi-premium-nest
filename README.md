@@ -1,10 +1,10 @@
-# Kimchi Premium
+# Kimchi Premium Nest
 
 NestJS + TypeORM + Oracle/SQLite
 
 ## Description
 
-Watching Kimchi Premium Price
+Kimchi Premium NestJS Server
 
 ## Installation
 
