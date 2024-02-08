@@ -4,8 +4,8 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 
 import { BinanceService } from '../binance/binance.service';
-import { Coin } from '../common/entities/coin.entity';
-import { Price } from '../common/entities/price.entity';
+import { Coin } from '../coin/entities/coin.entity';
+import { Price } from '../price/entities/price.entity';
 import { UpbitService } from '../upbit/upbit.service';
 
 @Injectable()
@@ -36,7 +36,7 @@ export class TaskService implements OnApplicationBootstrap {
     const coins = [...upbitCoins, ...binanceCoins];
 
     await Promise.all(
-      coins.map(async (coin: Coin) => {
+      coins.map(async (coin) => {
         const exists = await this.coinRepository
           .createQueryBuilder('coin')
           .select('coin.id')
@@ -52,7 +52,7 @@ export class TaskService implements OnApplicationBootstrap {
         } else {
           await this.coinRepository.insert({
             exchange: coin.exchange,
-            name: coin?.name,
+            name: (coin as any)?.name,
             symbol: coin.symbol,
             baseAsset: coin.baseAsset,
             quoteAsset: coin.quoteAsset,

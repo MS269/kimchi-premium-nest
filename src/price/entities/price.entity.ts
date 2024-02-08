@@ -6,7 +6,7 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-import { Coin } from './coin.entity';
+import { Coin } from '../../coin/entities/coin.entity';
 
 @Entity()
 export class Price {

@@ -1,8 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
-import { Coin } from '../common/entities/coin.entity';
-import { Price } from '../common/entities/price.entity';
+import { Coin } from '../coin/entities/coin.entity';
+import { Price } from '../price/entities/price.entity';
 import { UpbitCoinResponse } from './interfaces/coin-response.interface';
 import { PartialUpbitPriceResponse } from './types/price-response.type';
 import { UpbitService } from './upbit.service';

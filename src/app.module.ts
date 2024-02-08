@@ -4,6 +4,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BinanceModule } from './binance/binance.module';
+import { CoinModule } from './coin/coin.module';
+import { PriceModule } from './price/price.module';
 import { TaskModule } from './task/task.module';
 import { TypeOrmConfigService } from './type-orm-config/type-orm-config.service';
 import { UpbitModule } from './upbit/upbit.module';
@@ -16,6 +18,8 @@ import { UpbitModule } from './upbit/upbit.module';
     TaskModule,
     UpbitModule,
     BinanceModule,
+    CoinModule,
+    PriceModule,
   ],
 })
 export class AppModule {}
