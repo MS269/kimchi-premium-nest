@@ -1,40 +1,43 @@
 import {
+  Body,
   Controller,
+  Delete,
   Get,
-  NotFoundException,
   Param,
-  Query,
+  Patch,
+  Post,
 } from '@nestjs/common';
 
+import { CreatePriceDto } from './dto/create-price.dto';
+import { UpdatePriceDto } from './dto/update-price.dto';
 import { PriceService } from './price.service';
 
-@Controller('coins/:coinId/prices')
+@Controller('prices')
 export class PriceController {
   constructor(private readonly priceService: PriceService) {}
 
-  @Get()
-  async findBetweenDates(
-    @Param('coinId') coinId: string,
-    @Query() query: { start?: string; end?: string },
-  ) {
-    const { start, end } = query;
+  @Post()
+  create(@Body() createPriceDto: CreatePriceDto) {
+    return this.priceService.create(createPriceDto);
+  }
 
-    if (!start && !end) {
-      return this.priceService.findByCoinId(+coinId);
-    } else if (start && !end) {
-      return this.priceService.findBetweenDates(
-        +coinId,
-        new Date(start),
-        new Date(),
-      );
-    } else if (start && end) {
-      return this.priceService.findBetweenDates(
-        +coinId,
-        new Date(start),
-        new Date(end),
-      );
-    } else {
-      throw new NotFoundException();
-    }
+  @Get()
+  findAll() {
+    return this.priceService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.priceService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updatePriceDto: UpdatePriceDto) {
+    return this.priceService.update(+id, updatePriceDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.priceService.remove(+id);
   }
 }

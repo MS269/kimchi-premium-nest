@@ -1,5 +1,13 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
+import { Exchange } from '../../exchange/entities/exchange.entity';
 import { Price } from '../../price/entities/price.entity';
 
 @Entity()
@@ -7,8 +15,11 @@ export class Coin {
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ManyToOne(() => Exchange, (exchange) => exchange.coins)
+  exchange: Exchange;
+
   @Column()
-  exchange: string;
+  exchangeName: string;
 
   @Column({ nullable: true })
   name?: string;
@@ -22,8 +33,12 @@ export class Coin {
   @Column()
   quoteAsset: string;
 
-  @OneToMany(() => Price, (price) => price.coin)
-  prices: Price[];
+  @OneToOne(() => Price, (price) => price.coin, { nullable: true })
+  @JoinColumn()
+  price?: Price;
+
+  @Column({ nullable: true })
+  priceId?: number;
 
   @Column({ default: '' })
   warning: string;

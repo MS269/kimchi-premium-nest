@@ -1,8 +1,5 @@
-/** API: https://binance-docs.github.io/apidocs/spot/en/#symbol-order-book-ticker */
+/** API: https://binance-docs.github.io/apidocs/spot/en/#symbol-price-ticker */
 export interface BinancePriceResponse {
   symbol: string;
-  bidPrice: number;
-  bidQty: number;
-  askPrice: number;
-  askQty: number;
+  price: number;
 }

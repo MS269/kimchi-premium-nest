@@ -2,7 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -13,14 +13,17 @@ export class Price {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ManyToOne(() => Coin, (coin) => coin.prices)
+  @OneToOne(() => Coin, (coin) => coin.price)
   coin: Coin;
 
   @Column()
-  bidPrice: number;
+  coinId: number;
 
-  @Column()
-  askPrice: number;
+  @Column({ type: 'float' })
+  krw: number;
+
+  @Column({ type: 'float', nullable: true })
+  usdt?: number;
 
   @CreateDateColumn()
   timestamp: Date;

@@ -2,9 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
 import { Coin } from '../coin/entities/coin.entity';
-import { Price } from '../price/entities/price.entity';
 import { BinanceService } from './binance.service';
-import { BinancePriceResponse } from './interfaces/price-response.interface';
 import { PartialBinanceCoinsResponse } from './types/coin-response.type';
 
 jest.mock('axios');
@@ -57,14 +55,14 @@ describe('BinanceService', () => {
       // then
       const expectedCoins: Partial<Coin>[] = [
         {
-          exchange: 'Binance',
+          exchangeName: 'Binance',
           symbol: 'BTCUSDT',
           baseAsset: 'BTC',
           quoteAsset: 'USDT',
           warning: '',
         },
         {
-          exchange: 'Binance',
+          exchangeName: 'Binance',
           symbol: 'ETHUSDT',
           baseAsset: 'ETH',
           quoteAsset: 'USDT',
@@ -76,86 +74,10 @@ describe('BinanceService', () => {
   });
 
   describe('fetchPrices()', () => {
-    it('should return 0 prices with 0 symbols', async () => {
-      // given
-      const symbols: string[] = [];
+    // TDOO
+  });
 
-      const mockedResponse: Partial<BinancePriceResponse>[] = [];
-      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
-
-      // when
-      const result = await service.fetchPrices(symbols);
-
-      // then
-      const expectedPrices: Partial<Coin & Price>[] = [];
-      expect(result).toEqual(expectedPrices);
-    });
-
-    it('should return 1 price with 1 symbol', async () => {
-      // given
-      const symbols: string[] = ['BTCUSDT'];
-
-      const mockedResponse: Partial<BinancePriceResponse>[] = [
-        {
-          symbol: 'BTCUSDT',
-          bidPrice: 43005.61,
-          askPrice: 43005.62,
-        },
-      ];
-      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
-
-      // when
-      const result = await service.fetchPrices(symbols);
-
-      // then
-      const expectedPrices: Partial<Coin & Price>[] = [
-        {
-          exchange: 'Binance',
-          symbol: 'BTCUSDT',
-          bidPrice: 43005.61,
-          askPrice: 43005.62,
-        },
-      ];
-      expect(result).toEqual(expectedPrices);
-    });
-
-    it('should return 2 prices with 2 symbols', async () => {
-      // given
-      const symbols: string[] = ['BTCUSDT', 'ETHUSDT'];
-
-      const mockedResponse: Partial<BinancePriceResponse>[] = [
-        {
-          symbol: 'BTCUSDT',
-          bidPrice: 43000.34,
-          askPrice: 43000.35,
-        },
-        {
-          symbol: 'ETHUSDT',
-          bidPrice: 2306.9,
-          askPrice: 2306.91,
-        },
-      ];
-      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
-
-      // when
-      const result = await service.fetchPrices(symbols);
-
-      // then
-      const expectedPrices: Partial<Coin & Price>[] = [
-        {
-          exchange: 'Binance',
-          symbol: 'BTCUSDT',
-          bidPrice: 43000.34,
-          askPrice: 43000.35,
-        },
-        {
-          exchange: 'Binance',
-          symbol: 'ETHUSDT',
-          bidPrice: 2306.9,
-          askPrice: 2306.91,
-        },
-      ];
-      expect(result).toEqual(expectedPrices);
-    });
+  describe('fetchOrderbooks()', () => {
+    // TODO
   });
 });

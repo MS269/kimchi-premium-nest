@@ -1,38 +1,43 @@
-import { Controller, Get, NotFoundException, Query } from '@nestjs/common';
-
 import {
-  assetFormatter,
-  exchangeFormatter,
-} from '../common/utils/formatter.utils';
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
+
 import { CoinService } from './coin.service';
+import { CreateCoinDto } from './dto/create-coin.dto';
+import { UpdateCoinDto } from './dto/update-coin.dto';
 
 @Controller('coins')
 export class CoinController {
   constructor(private readonly coinService: CoinService) {}
 
-  @Get()
-  async findByExchangeAndAsset(
-    @Query()
-    query: {
-      exchange?: string;
-      baseAsset?: string;
-      quoteAsset?: string;
-    },
-  ) {
-    const { exchange, baseAsset, quoteAsset } = query;
+  @Post()
+  create(@Body() createCoinDto: CreateCoinDto) {
+    return this.coinService.create(createCoinDto);
+  }
 
-    if (!exchange && !baseAsset && !quoteAsset) {
-      return this.coinService.findAll();
-    } else if (exchange && !baseAsset && !quoteAsset) {
-      return this.coinService.findBy({ exchange: exchangeFormatter(exchange) });
-    } else if (exchange && baseAsset && quoteAsset) {
-      return this.coinService.findOneBy({
-        exchange: exchangeFormatter(exchange),
-        baseAsset: assetFormatter(baseAsset),
-        quoteAsset: assetFormatter(quoteAsset),
-      });
-    } else {
-      throw new NotFoundException();
-    }
+  @Get()
+  findAll() {
+    return this.coinService.findAll();
+  }
+
+  @Get(':id')
+  findOne(@Param('id') id: string) {
+    return this.coinService.findOne(+id);
+  }
+
+  @Patch(':id')
+  update(@Param('id') id: string, @Body() updateCoinDto: UpdateCoinDto) {
+    return this.coinService.update(+id, updateCoinDto);
+  }
+
+  @Delete(':id')
+  remove(@Param('id') id: string) {
+    return this.coinService.remove(+id);
   }
 }

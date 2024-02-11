@@ -1,32 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
-import { Price } from './entities/price.entity';
+import { CreatePriceDto } from './dto/create-price.dto';
+import { UpdatePriceDto } from './dto/update-price.dto';
 
 @Injectable()
 export class PriceService {
-  constructor(
-    @InjectRepository(Price)
-    private readonly priceRepository: Repository<Price>,
-  ) {}
-
-  async findByCoinId(coinId: number) {
-    return this.priceRepository
-      .createQueryBuilder('price')
-      .where('price.coinId = :coinId', { coinId })
-      .orderBy('price.timestamp', 'DESC')
-      .limit(1)
-      .getOne();
+  create(createPriceDto: CreatePriceDto) {
+    return 'This action adds a new price';
   }
 
-  async findBetweenDates(coinId: number, start: Date, end: Date) {
-    return this.priceRepository
-      .createQueryBuilder('price')
-      .where('price.coinId = :coinId', { coinId })
-      .andWhere('price.timestamp >= :start', { start })
-      .andWhere('price.timestamp <= :end', { end })
-      .orderBy('price.timestamp', 'DESC')
-      .getMany();
+  findAll() {
+    return `This action returns all price`;
+  }
+
+  findOne(id: number) {
+    return `This action returns a #${id} price`;
+  }
+
+  update(id: number, updatePriceDto: UpdatePriceDto) {
+    return `This action updates a #${id} price`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} price`;
   }
 }

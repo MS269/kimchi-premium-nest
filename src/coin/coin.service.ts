@@ -1,26 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 
-import { FindCoinDto } from './dto/find-coin.dto';
-import { Coin } from './entities/coin.entity';
+import { CreateCoinDto } from './dto/create-coin.dto';
+import { UpdateCoinDto } from './dto/update-coin.dto';
 
 @Injectable()
 export class CoinService {
-  constructor(
-    @InjectRepository(Coin)
-    private readonly coinRepository: Repository<Coin>,
-  ) {}
-
-  async findAll() {
-    return this.coinRepository.find();
+  create(createCoinDto: CreateCoinDto) {
+    return 'This action adds a new coin';
   }
 
-  async findBy(dto: FindCoinDto) {
-    return this.coinRepository.findBy(dto);
+  findAll() {
+    return `This action returns all coin`;
   }
 
-  async findOneBy(dto: FindCoinDto) {
-    return this.coinRepository.findOneBy(dto);
+  findOne(id: number) {
+    return `This action returns a #${id} coin`;
+  }
+
+  update(id: number, updateCoinDto: UpdateCoinDto) {
+    return `This action updates a #${id} coin`;
+  }
+
+  remove(id: number) {
+    return `This action removes a #${id} coin`;
   }
 }
