@@ -43,6 +43,10 @@ export class UpbitService {
   /** API: https://docs.upbit.com/reference/ticker%ED%98%84%EC%9E%AC%EA%B0%80-%EC%A0%95%EB%B3%B4 */
   async fetchPrices(symbols: string[]) {
     try {
+      if (symbols.length === 0) {
+        return [];
+      }
+
       const { data } = await axios.get<UpbitPriceResponse[]>(
         'https://api.upbit.com/v1/ticker',
         { params: { markets: symbols.join(', ') } },
