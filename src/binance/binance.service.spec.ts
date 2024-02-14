@@ -2,7 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import axios from 'axios';
 
 import { Coin } from '../coin/entities/coin.entity';
+import { Price } from '../price/entities/price.entity';
 import { BinanceService } from './binance.service';
+import { BinancePriceResponse } from './interfaces/price-response.interface';
 import { PartialBinanceCoinsResponse } from './types/coin-response.type';
 
 jest.mock('axios');
@@ -74,7 +76,84 @@ describe('BinanceService', () => {
   });
 
   describe('fetchPrices()', () => {
-    // TDOO
+    it('should return 0 prices with 0 symbols', async () => {
+      // given
+      const symbols: string[] = [];
+
+      const mockedResponse: Partial<BinancePriceResponse>[] = [];
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
+
+      // when
+      const result = await service.fetchPrices(symbols);
+
+      // then
+      const expectedPrices: Partial<Coin & Price>[] = [];
+      expect(result).toEqual(expectedPrices);
+    });
+
+    it('should return 1 price with 1 symbol', async () => {
+      // given
+      const symbols: string[] = ['BTCUSDT'];
+
+      const mockedResponse: Partial<BinancePriceResponse>[] = [
+        {
+          symbol: 'BTCUSDT',
+          price: 49546.13,
+        },
+      ];
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
+
+      // when
+      const result = await service.fetchPrices(symbols);
+
+      // then
+      const expectedPrices: Partial<Coin & Price>[] = [
+        {
+          exchangeName: 'Binance',
+          symbol: 'BTCUSDT',
+          usdt: 49546.13,
+          timestamp: new Date(),
+        },
+      ];
+      expect(result).toEqual(expectedPrices);
+    });
+
+    it('should return 2 prices with 2 symbols', async () => {
+      // given
+      const symbols: string[] = ['BTCUSDT', 'ETHUSDT'];
+
+      const mockedResponse: Partial<BinancePriceResponse>[] = [
+        {
+          symbol: 'BTCUSDT',
+          price: 49546.13,
+        },
+        {
+          symbol: 'ETHUSDT',
+          price: 2637.79,
+        },
+      ];
+      jest.spyOn(axios, 'get').mockResolvedValue({ data: mockedResponse });
+
+      // when
+      const result = await service.fetchPrices(symbols);
+
+      // then
+      const expectedPrices: Partial<Coin & Price>[] = [
+        {
+          exchangeName: 'Binance',
+          symbol: 'BTCUSDT',
+          usdt: 49546.13,
+          timestamp: new Date(),
+        },
+        {
+          exchangeName: 'Binance',
+          symbol: 'ETHUSDT',
+          usdt: 2637.79,
+          timestamp: new Date(),
+        },
+      ];
+      expect(result).toEqual(expectedPrices);
+    });
   });
 
   describe('fetchOrderbooks()', () => {

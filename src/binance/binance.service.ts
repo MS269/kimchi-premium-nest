@@ -41,6 +41,10 @@ export class BinanceService {
   /** API: https://binance-docs.github.io/apidocs/spot/en/#symbol-price-ticker */
   async fetchPrices(symbols: string[]) {
     try {
+      if (symbols.length === 0) {
+        return [];
+      }
+
       const { data } = await axios.get<BinancePriceResponse[]>(
         'https://api.binance.com/api/v3/ticker/price',
         { params: { symbols: '["' + symbols.join('","') + '"]' } },
