@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { BinanceModule } from './binance/binance.module';
 // import { CoinModule } from './coin/coin.module';
+import { DunamuModule } from './dunamu/dunamu.module';
 // import { ExchangeModule } from './exchange/exchange.module';
 // import { PriceModule } from './price/price.module';
 import { TaskModule } from './task/task.module';
@@ -17,6 +18,7 @@ import { UpbitModule } from './upbit/upbit.module';
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
     ScheduleModule.forRoot(),
     TaskModule,
+    DunamuModule,
     UpbitModule,
     BinanceModule,
     // ExchangeModule,
