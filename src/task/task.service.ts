@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { BinanceService } from '../binance/binance.service';
 import { Coin } from '../coin/entities/coin.entity';
 import { kimchiPremiumCalculator } from '../common/utils/calculator.utils';
+import { DunamuService } from '../dunamu/dunamu.service';
 import { Exchange } from '../exchange/entities/exchange.entity';
 import { Price } from '../price/entities/price.entity';
 import { UpbitService } from '../upbit/upbit.service';
@@ -22,12 +23,14 @@ export class TaskService implements OnApplicationBootstrap {
     @InjectRepository(Price)
     private readonly priceRepository: Repository<Price>,
 
+    private readonly dunamuService: DunamuService,
     private readonly upbitService: UpbitService,
     private readonly binanceService: BinanceService,
   ) {}
 
   async onApplicationBootstrap() {
     await this.createExchanges();
+    await this.updateUsdPrice();
     await this.updateAllCoins();
     await this.updateAllPrices();
     await this.calculateKimchiPremium();
@@ -40,6 +43,15 @@ export class TaskService implements OnApplicationBootstrap {
     await this.exchangeRepository.save({ name: 'Binance' });
 
     this.logger.log(`createExchanges() +${Date.now() - now}ms`);
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async updateUsdPrice() {
+    const now = Date.now();
+
+    await this.dunamuService.updateUsdPrice();
+
+    this.logger.log(`updateUsdPrice() +${Date.now() - now}ms`);
   }
 
   @Cron(CronExpression.EVERY_MINUTE)
@@ -131,8 +143,8 @@ export class TaskService implements OnApplicationBootstrap {
           if (coin.quoteAsset === 'KRW') {
             newPrice.krw = price.krw;
           } else if (coin.quoteAsset === 'USDT') {
-            // TODO: exchange rate
-            newPrice.krw = price.usdt * 1331.5;
+            const usd = this.dunamuService.getUsdPrice();
+            newPrice.krw = price.usdt * usd;
             newPrice.usdt = price.usdt;
           }
 
