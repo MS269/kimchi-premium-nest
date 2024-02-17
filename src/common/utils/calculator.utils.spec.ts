@@ -12,7 +12,7 @@ describe('calculator', () => {
       const kimchiPremium = kimchiPremiumCalculator(kr, us * usdToWon);
 
       // then
-      expect(kimchiPremium).toEqual('+1.64%');
+      expect(kimchiPremium).toEqual(1.64);
     });
   });
 });
