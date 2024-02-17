@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,6 +9,7 @@ import { Coin } from '../coin/entities/coin.entity';
 import { kimchiPremiumCalculator } from '../common/utils/calculator.utils';
 import { DunamuService } from '../dunamu/dunamu.service';
 import { Exchange } from '../exchange/entities/exchange.entity';
+import { OrderConfig } from '../order-config/entities/order-config.entity';
 import { Price } from '../price/entities/price.entity';
 import { UpbitService } from '../upbit/upbit.service';
 
@@ -22,7 +24,10 @@ export class TaskService implements OnApplicationBootstrap {
     private readonly coinRepository: Repository<Coin>,
     @InjectRepository(Price)
     private readonly priceRepository: Repository<Price>,
+    @InjectRepository(OrderConfig)
+    private readonly orderConfigRepository: Repository<OrderConfig>,
 
+    private readonly configService: ConfigService,
     private readonly dunamuService: DunamuService,
     private readonly upbitService: UpbitService,
     private readonly binanceService: BinanceService,
@@ -30,6 +35,15 @@ export class TaskService implements OnApplicationBootstrap {
 
   async onApplicationBootstrap() {
     await this.createExchanges();
+    await this.setupOrderConfig();
+    await this.updateUsdPrice();
+    await this.updateAllCoins();
+    await this.updateAllPrices();
+    await this.calculateKimchiPremium();
+  }
+
+  @Cron(CronExpression.EVERY_MINUTE)
+  async runEveryMin() {
     await this.updateUsdPrice();
     await this.updateAllCoins();
     await this.updateAllPrices();
@@ -45,7 +59,25 @@ export class TaskService implements OnApplicationBootstrap {
     this.logger.log(`createExchanges() +${Date.now() - now}ms`);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  async setupOrderConfig() {
+    const now = Date.now();
+
+    await this.orderConfigRepository.save({
+      key: 'low',
+      value: this.configService.get('ORDER_LOW') ?? '2.0',
+    });
+    await this.orderConfigRepository.save({
+      key: 'high',
+      value: this.configService.get('ORDER_HIGH') ?? '4.0',
+    });
+    await this.orderConfigRepository.save({
+      key: 'unit',
+      value: this.configService.get('ORDER_UNIT') ?? '10000000',
+    });
+
+    this.logger.log(`setupOrderConfig() +${Date.now() - now}ms`);
+  }
+
   async updateUsdPrice() {
     const now = Date.now();
 
@@ -54,7 +86,6 @@ export class TaskService implements OnApplicationBootstrap {
     this.logger.log(`updateUsdPrice() +${Date.now() - now}ms`);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
   async updateAllCoins() {
     const now = Date.now();
 
@@ -104,7 +135,6 @@ export class TaskService implements OnApplicationBootstrap {
     this.logger.log(`updateAllCoins() +${Date.now() - now}ms`);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
   async updateAllPrices() {
     const now = Date.now();
 
@@ -156,9 +186,27 @@ export class TaskService implements OnApplicationBootstrap {
     this.logger.log(`updateAllPrices() +${Date.now() - now}ms`);
   }
 
-  @Cron(CronExpression.EVERY_MINUTE)
   async calculateKimchiPremium() {
     const now = Date.now();
+
+    const lowConfig = await this.orderConfigRepository.findOne({
+      select: { value: true },
+      where: { key: 'low' },
+    });
+    const highConfig = await this.orderConfigRepository.findOne({
+      select: { value: true },
+      where: { key: 'high' },
+    });
+
+    if (!lowConfig) {
+      return this.logger.error('low(order-config) not found');
+    }
+    if (!highConfig) {
+      return this.logger.error('high(order-config) not found');
+    }
+
+    const low = Number(lowConfig.value);
+    const high = Number(highConfig.value);
 
     const upbit = await this.exchangeRepository.findOne({
       where: { name: 'Upbit' },
@@ -188,9 +236,19 @@ export class TaskService implements OnApplicationBootstrap {
           binanceCoin.price.krw,
         );
 
-        this.logger.log(
-          `${upbitCoin.name}(${upbitCoin.baseAsset}) ${kimchiPremium}`,
-        );
+        // this.logger.log(
+        //   `${upbitCoin.name}(${upbitCoin.baseAsset})  ${kimchiPremium}%`,
+        // );
+
+        if (kimchiPremium <= low) {
+          this.logger.log(
+            `${upbitCoin.name}(${upbitCoin.baseAsset}) = ${kimchiPremium}% < ${low}`,
+          );
+        } else if (kimchiPremium >= high) {
+          this.logger.log(
+            `${upbitCoin.name}(${upbitCoin.baseAsset}) = ${kimchiPremium}% > ${high}`,
+          );
+        }
       }),
     );
 
