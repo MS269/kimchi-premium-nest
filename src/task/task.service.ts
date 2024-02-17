@@ -199,10 +199,10 @@ export class TaskService implements OnApplicationBootstrap {
     });
 
     if (!lowConfig) {
-      return this.logger.error('low(order-config) not found');
+      return this.logger.error('low(order_config) not found');
     }
     if (!highConfig) {
-      return this.logger.error('high(order-config) not found');
+      return this.logger.error('high(order_config) not found');
     }
 
     const low = Number(lowConfig.value);
