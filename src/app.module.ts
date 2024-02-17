@@ -7,6 +7,7 @@ import { BinanceModule } from './binance/binance.module';
 // import { CoinModule } from './coin/coin.module';
 import { DunamuModule } from './dunamu/dunamu.module';
 // import { ExchangeModule } from './exchange/exchange.module';
+// import { OrderConfigModule } from './order-config/order-config.module';
 // import { PriceModule } from './price/price.module';
 import { TaskModule } from './task/task.module';
 import { TypeOrmConfigService } from './type-orm-config/type-orm-config.service';
@@ -24,6 +25,7 @@ import { UpbitModule } from './upbit/upbit.module';
     // ExchangeModule,
     // CoinModule,
     // PriceModule,
+    // OrderConfigModule,
   ],
 })
 export class AppModule {}
